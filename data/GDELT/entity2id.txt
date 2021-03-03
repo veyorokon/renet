@@ -1,0 +1,8 @@
+None	0
+CHN	1
+JPN	2
+IND	3
+VNM	4
+PHL	5
+TWN	6
+USA	7
