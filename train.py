@@ -117,19 +117,23 @@ def train(args):
     epoch = 0
     best_mrr = 0
     while True:
+        print('training starting')
         model.train()
         if epoch == args.max_epochs:
             break
         epoch += 1
         loss_epoch = 0
         t0 = time.time()
-
+        print('training time captured')
         train_data_shuffle, s_history_shuffle, s_history_t_shuffle, o_history_shuffle, o_history_t_shuffle = shuffle(train_data, s_history, s_history_t, o_history, o_history_t)
+        print('training data formatted')
+
         for batch_data, s_hist, s_hist_t, o_hist, o_hist_t in utils.make_batch2(train_data_shuffle, s_history_shuffle, s_history_t_shuffle, o_history_shuffle, o_history_t_shuffle, args.batch_size):
             # break
             batch_data = torch.from_numpy(batch_data).long()
             if use_cuda:
                 batch_data = batch_data.cuda()
+            print('batch instance preprocessing')
             loss_s = model(batch_data, (s_hist, s_hist_t), (o_hist, o_hist_t), graph_dict, subject=True)
             loss_o = model(batch_data, (s_hist, s_hist_t), (o_hist, o_hist_t), graph_dict, subject=False)
             loss = loss_s + loss_o
