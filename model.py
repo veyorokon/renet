@@ -58,7 +58,7 @@ class RENet(nn.Module):
 
 
     """
-    Prediction function in training. 
+    Prediction function in training.
     This should be different from testing because in testing we don't use ground-truth history.
     """
     def forward(self, triplets, s_hist, o_hist, graph_dict, subject=True):
@@ -79,10 +79,10 @@ class RENet(nn.Module):
 
         hist_len = torch.LongTensor(list(map(len, hist[0]))).cuda()
         s_len, s_idx = hist_len.sort(0, descending=True)
-        s_packed_input, s_packed_input_r = self.aggregator(hist, s, r, self.ent_embeds,
-                                                        rel_embeds, graph_dict, self.global_emb,
-                                                        reverse=reverse)
-   
+        s_packed_input, s_packed_input_r = self.aggregator(
+            hist, s, r, self.ent_embeds, rel_embeds, graph_dict, self.global_emb, reverse=reverse
+        )
+
         tt, s_h = self.encoder(s_packed_input)
         s_h = s_h.squeeze()
         s_h = torch.cat((s_h, torch.zeros(len(s) - len(s_h), self.h_dim).cuda()), dim=0)
@@ -221,7 +221,7 @@ class RENet(nn.Module):
 
         if self.latest_time != t:
             _, sub, prob_sub = global_model.predict(self.latest_time, self.graph_dict, subject=True)
-            
+
             m = torch.distributions.categorical.Categorical(prob_sub)
             subjects = m.sample(torch.Size([self.num_k]))
             prob_subjects = prob_sub[subjects]
@@ -349,7 +349,7 @@ class RENet(nn.Module):
 
             tt, o_h = self.encoder(inp.view(1, len(o_history), 4 * self.h_dim))
             o_h = o_h.squeeze()
-        
+
 
         ob_pred = self.linear(torch.cat((self.ent_embeds[s], s_h, self.rel_embeds[:self.num_rels][r]), dim=0))
         sub_pred = self.linear(torch.cat((self.ent_embeds[o], o_h, self.rel_embeds[self.num_rels:][r]), dim=0))
@@ -444,4 +444,3 @@ class RENet(nn.Module):
 
                     s_his_cache = torch.cat((s_his_cache, forward), dim=0)
         return s_his_cache
-
